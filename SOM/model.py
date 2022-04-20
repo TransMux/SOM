@@ -1,4 +1,5 @@
-from typing import Tuple
+from functools import partial
+from typing import Tuple, Optional
 
 import numpy as np
 from tqdm import tqdm
@@ -12,7 +13,7 @@ class SOM:
             self,
             size: Tuple[int, int],
             feature: int,
-            learning_rate: int,
+            learning_rate: int or float,
             max_iterations: int,
             shuffle: bool = False,
             neighbor_function: str = "bubble",
@@ -34,7 +35,12 @@ class SOM:
         self.xx, self.yy = np.meshgrid(self.x_steps, self.y_steps)
         # 初始化距离函数
         self.distance = distance_functions[distance_function]
-        self.neighborhood = neighborhood_functions[neighbor_function]
+
+        self.neighborhood = partial(
+            neighborhood_functions[neighbor_function],
+            x_steps=self.x_steps,
+            y_steps=self.y_steps
+        )
 
     def fit(self, data: np.ndarray, verbose: bool = True):
         # 训练过程
