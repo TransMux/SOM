@@ -2,9 +2,19 @@ from typing import Tuple
 
 import numpy as np
 
+from SOM.Neighbor import neighborhood_functions
+
 
 class SOM:
-    def __init__(self, size: Tuple[int, int], feature: int, learning_rate, max_iterations, shuffle=False):
+    def __init__(
+            self,
+            size: Tuple[int, int],
+            feature: int,
+            learning_rate: int,
+            max_iterations: int,
+            shuffle: bool = False,
+            neighbor_function: str = "bubble"
+    ):
         self.shuffle = shuffle
         self.size = size
         self.feature = feature
@@ -19,6 +29,8 @@ class SOM:
         # 初始化网格
         self.x_steps, self.y_steps = np.arange(size[0]), np.arange(size[1])
         self.xx, self.yy = np.meshgrid(self.x_steps, self.y_steps)
+        # 初始化距离函数
+        self.neighborhood = neighborhood_functions[neighbor_function]
 
     def fit(self):
         pass
