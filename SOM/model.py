@@ -1,3 +1,4 @@
+import time
 from functools import partial
 from typing import Tuple, Optional
 
@@ -49,6 +50,8 @@ class SOM:
         assert feature == self.feature, "训练时传入的data维度与设置的不匹配"
         # 开始训练
         for _ in range(self.max_iterations):
+            if self.shuffle:
+                np.random.shuffle(data)
             for i, x in enumerate(tqdm(data, desc=f"Epoch {_}")):
                 winner = self.get_winner(x)
                 # 得出更新步长
@@ -56,7 +59,9 @@ class SOM:
                 g = self.neighborhood(winner, 4) * eta
                 # 应用更新
                 self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
+            time.sleep(0.01)
             print(f"Epoch {_} Error: ", self.map_error(data))
+            time.sleep(0.01)
 
     def get_winner(self, x):
         # 计算全局距离
