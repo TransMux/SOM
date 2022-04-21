@@ -52,7 +52,7 @@ for i, neighbor in enumerate(neighbor_functions):
         # 设置行列
         if j == 0:
             # 是第一列的
-            target_ax.set_xlabel(neighbor)
+            target_ax.set_ylabel(neighbor)
 
         if i == 0:
             # 是第一行的
