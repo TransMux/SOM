@@ -25,9 +25,10 @@ class SOM:
         self.feature = feature
         self.learning_rate = learning_rate
         self.max_iterations = max_iterations
+        self.errors = []
 
         # 处理参数
-        self.mutable_update = lambda origin, iteration: origin
+        self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
         # 在 [-1, 1] 内生成随机初始权重 x * y * features
         self.weights = np.random.randn(*size, feature) * 2 - 1
         # 初始化激活图
@@ -45,6 +46,9 @@ class SOM:
             xx=self.xx,
             yy=self.yy
         )
+
+        self.title = f"iter:{max_iterations}/size:{size}/lr:{learning_rate}/distance:{distance_function}/neighbor:{neighbor_function}"
+        print(self.title)
 
     def fit(self, data: np.ndarray, verbose: bool = True):
         # 训练过程
@@ -76,8 +80,21 @@ class SOM:
         # data      batch * features
         # weights   x * y * features
         # Distance  batch * (x * y)
-        distance = np.einsum("ij, xyj -> ixy", data, self.weights).reshape(data.shape[0], -1)
+        # distance = np.einsum("ij, xyj -> ixy", data, self.weights).reshape(data.shape[0], -1) Wrong !
+        # Or : distance = np.linalg.norm(data[:, None, ...] - self.weights.reshape(-1,64)[None, ...], axis=-1)
+        distance = self._distance_from_weights(data)
         coords = np.argmin(distance, axis=1)
         weights = self.weights[np.unravel_index(coords, self.size)]
         # Error     batch * 1
-        return np.linalg.norm(data - weights, axis=1).mean()
+        error = np.linalg.norm(data - weights, axis=1).mean()
+        self.errors.append(error)
+        return error
+
+    def _distance_from_weights(self, data):
+        # 实现两个不同长度矩阵欧氏距离的计算
+        # https://stackoverflow.com/questions/60686539/python-euclidean-distance-different-size-vectors
+        weights_flat = self.weights.reshape(-1, self.weights.shape[2])
+        input_data_sq = np.power(data, 2).sum(axis=1, keepdims=True)
+        weights_flat_sq = np.power(weights_flat, 2).sum(axis=1, keepdims=True)
+        cross_term = np.dot(data, weights_flat.T)
+        return np.sqrt(-2 * cross_term + input_data_sq + weights_flat_sq.T)
