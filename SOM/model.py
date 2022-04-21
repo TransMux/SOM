@@ -54,6 +54,17 @@ class SOM:
             winner = np.unravel_index(self.activation_map.argmin(), self.size)
             # 得出更新步长
             eta = self.mutable_update(self.learning_rate, i)
-            g = self.neighborhood(winner, 2) * eta
+            g = self.neighborhood(winner, 4) * eta
             # 应用更新
             self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
+        print("Error: ", self.map_error(data))
+
+    def map_error(self, data: np.ndarray):
+        # data      batch * features
+        # weights   x * y * features
+        # Distance  batch * (x * y)
+        distance = np.einsum("ij, xyj -> ixy", data, self.weights).reshape(data.shape[0], -1)
+        coords = np.argmin(distance, axis=1)
+        weights = self.weights[np.unravel_index(coords, self.size)]
+        # Error     batch * 1
+        return np.linalg.norm(data - weights, axis=1).mean()
