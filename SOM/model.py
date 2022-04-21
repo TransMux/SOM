@@ -41,7 +41,9 @@ class SOM:
         self.neighborhood = partial(
             neighborhood_functions[neighbor_function],
             x_steps=self.x_steps,
-            y_steps=self.y_steps
+            y_steps=self.y_steps,
+            xx=self.xx,
+            yy=self.yy
         )
 
     def fit(self, data: np.ndarray, verbose: bool = True):
