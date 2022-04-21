@@ -28,7 +28,7 @@ class SOM:
         self.errors = []
 
         # 处理参数
-        self.mutable_update = lambda origin, iteration: origin
+        self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
         # 在 [-1, 1] 内生成随机初始权重 x * y * features
         self.weights = np.random.randn(*size, feature) * 2 - 1
         # 初始化激活图
@@ -46,6 +46,9 @@ class SOM:
             xx=self.xx,
             yy=self.yy
         )
+
+        self.title = f"iter:{max_iterations}/size:{size}/lr:{learning_rate}/distance:{distance_function}/neighbor:{neighbor_function}"
+        print(self.title)
 
     def fit(self, data: np.ndarray, verbose: bool = True):
         # 训练过程
