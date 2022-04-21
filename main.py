@@ -15,7 +15,7 @@ som = SOM(
     feature=64,
     learning_rate=0.5,
     max_iterations=20,
-    neighbor_function="triangle",
+    neighbor_function="gaussian",
 )
 
 som.fit(data)
