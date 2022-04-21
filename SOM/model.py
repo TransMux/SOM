@@ -18,7 +18,8 @@ class SOM:
             max_iterations: int,
             shuffle: bool = True,
             neighbor_function: str = "bubble",
-            distance_function: str = "euclidean"
+            distance_function: str = "euclidean",
+            mutable_update=None
     ):
         self.shuffle = shuffle
         self.size = size
@@ -28,7 +29,10 @@ class SOM:
         self.errors = []
 
         # 处理参数
-        self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
+        if mutable_update:
+            self.mutable_update = mutable_update
+        else:
+            self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
         # 在 [-1, 1] 内生成随机初始权重 x * y * features
         self.weights = np.random.randn(*size, feature) * 2 - 1
         # 初始化激活图
