@@ -76,8 +76,19 @@ class SOM:
         # data      batch * features
         # weights   x * y * features
         # Distance  batch * (x * y)
-        distance = np.einsum("ij, xyj -> ixy", data, self.weights).reshape(data.shape[0], -1)
+        # distance = np.einsum("ij, xyj -> ixy", data, self.weights).reshape(data.shape[0], -1) Wrong !
+        # Or : distance = np.linalg.norm(data[:, None, ...] - self.weights.reshape(-1,64)[None, ...], axis=-1)
+        distance = self._distance_from_weights(data)
         coords = np.argmin(distance, axis=1)
         weights = self.weights[np.unravel_index(coords, self.size)]
         # Error     batch * 1
         return np.linalg.norm(data - weights, axis=1).mean()
+
+    def _distance_from_weights(self, data):
+        # 实现两个不同长度矩阵欧氏距离的计算
+        # https://stackoverflow.com/questions/60686539/python-euclidean-distance-different-size-vectors
+        weights_flat = self.weights.reshape(-1, self.weights.shape[2])
+        input_data_sq = np.power(data, 2).sum(axis=1, keepdims=True)
+        weights_flat_sq = np.power(weights_flat, 2).sum(axis=1, keepdims=True)
+        cross_term = np.dot(data, weights_flat.T)
+        return np.sqrt(-2 * cross_term + input_data_sq + weights_flat_sq.T)
