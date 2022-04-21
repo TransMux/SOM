@@ -25,6 +25,7 @@ class SOM:
         self.feature = feature
         self.learning_rate = learning_rate
         self.max_iterations = max_iterations
+        self.errors = []
 
         # 处理参数
         self.mutable_update = lambda origin, iteration: origin
@@ -82,7 +83,9 @@ class SOM:
         coords = np.argmin(distance, axis=1)
         weights = self.weights[np.unravel_index(coords, self.size)]
         # Error     batch * 1
-        return np.linalg.norm(data - weights, axis=1).mean()
+        error = np.linalg.norm(data - weights, axis=1).mean()
+        self.errors.append(error)
+        return error
 
     def _distance_from_weights(self, data):
         # 实现两个不同长度矩阵欧氏距离的计算
