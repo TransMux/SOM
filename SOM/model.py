@@ -23,6 +23,7 @@ class SOM:
         self.size = size
         self.feature = feature
         self.learning_rate = learning_rate
+        self.max_iterations = max_iterations
 
         # 处理参数
         self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
@@ -47,17 +48,18 @@ class SOM:
         batch, feature = data.shape
         assert feature == self.feature, "训练时传入的data维度与设置的不匹配"
         # 开始训练
-        for i, x in enumerate(tqdm(data)):
-            # 计算全局距离
-            self.activation_map = self.distance(x, self.weights)
-            # 获取坐标 这里用了一个比较新颖的方法 unravel_index
-            winner = np.unravel_index(self.activation_map.argmin(), self.size)
-            # 得出更新步长
-            eta = self.mutable_update(self.learning_rate, i)
-            g = self.neighborhood(winner, 4) * eta
-            # 应用更新
-            self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
-        print("Error: ", self.map_error(data))
+        for _ in range(self.max_iterations):
+            for i, x in enumerate(tqdm(data, desc=f"Epoch {_}")):
+                # 计算全局距离
+                self.activation_map = self.distance(x, self.weights)
+                # 获取坐标 这里用了一个比较新颖的方法 unravel_index
+                winner = np.unravel_index(self.activation_map.argmin(), self.size)
+                # 得出更新步长
+                eta = self.mutable_update(self.learning_rate, i)
+                g = self.neighborhood(winner, 4) * eta
+                # 应用更新
+                self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
+            print(f"Epoch {_} Error: ", self.map_error(data))
 
     def map_error(self, data: np.ndarray):
         # data      batch * features
