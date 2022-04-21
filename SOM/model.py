@@ -2,6 +2,7 @@ import time
 from functools import partial
 from typing import Tuple, Optional
 
+import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
@@ -16,10 +17,11 @@ class SOM:
             feature: int,
             learning_rate: int or float,
             max_iterations: int,
-            shuffle: bool = True,
+            shuffle: bool = False,
             neighbor_function: str = "bubble",
             distance_function: str = "euclidean",
-            mutable_update=None
+            mutable_update=None,
+            first_show=0
     ):
         self.shuffle = shuffle
         self.size = size
@@ -42,6 +44,8 @@ class SOM:
         self.xx, self.yy = np.meshgrid(self.x_steps, self.y_steps)
         # 初始化距离函数
         self.distance = distance_functions[distance_function]
+
+        self.first_show = first_show
 
         self.neighborhood = partial(
             neighborhood_functions[neighbor_function],
@@ -67,6 +71,13 @@ class SOM:
                 # 得出更新步长
                 eta = self.mutable_update(self.learning_rate, i)
                 g = self.neighborhood(winner, 4) * eta
+                if self.first_show == 0:
+                    import seaborn as sns
+                    sns.set_theme()
+                    sns.heatmap(g)
+                    plt.title("Update Map")
+                    plt.show()
+                    self.first_show = 1
                 # 应用更新
                 self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
             time.sleep(0.01)
