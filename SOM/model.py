@@ -26,7 +26,7 @@ class SOM:
         self.max_iterations = max_iterations
 
         # 处理参数
-        self.mutable_update = lambda origin, iteration: origin / (1 + iteration / (max_iterations / 2))
+        self.mutable_update = lambda origin, iteration: origin
         # 在 [-1, 1] 内生成随机初始权重 x * y * features
         self.weights = np.random.randn(*size, feature) * 2 - 1
         # 初始化激活图
