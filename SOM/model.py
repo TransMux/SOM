@@ -16,7 +16,7 @@ class SOM:
             feature: int,
             learning_rate: int or float,
             max_iterations: int,
-            shuffle: bool = False,
+            shuffle: bool = True,
             neighbor_function: str = "bubble",
             distance_function: str = "euclidean"
     ):
