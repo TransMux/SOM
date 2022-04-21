@@ -50,16 +50,20 @@ class SOM:
         # 开始训练
         for _ in range(self.max_iterations):
             for i, x in enumerate(tqdm(data, desc=f"Epoch {_}")):
-                # 计算全局距离
-                self.activation_map = self.distance(x, self.weights)
-                # 获取坐标 这里用了一个比较新颖的方法 unravel_index
-                winner = np.unravel_index(self.activation_map.argmin(), self.size)
+                winner = self.get_winner(x)
                 # 得出更新步长
                 eta = self.mutable_update(self.learning_rate, i)
                 g = self.neighborhood(winner, 4) * eta
                 # 应用更新
                 self.weights += np.einsum('ij, ijk->ijk', g, x - self.weights)
             print(f"Epoch {_} Error: ", self.map_error(data))
+
+    def get_winner(self, x):
+        # 计算全局距离
+        self.activation_map = self.distance(x, self.weights)
+        # 获取坐标 这里用了一个比较新颖的方法 unravel_index
+        winner = np.unravel_index(self.activation_map.argmin(), self.size)
+        return winner
 
     def map_error(self, data: np.ndarray):
         # data      batch * features
