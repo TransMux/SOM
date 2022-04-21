@@ -73,7 +73,7 @@ class SOM:
                 g = self.neighborhood(winner, 4) * eta
                 if self.first_show == 0:
                     import seaborn as sns
-                    sns.set_theme()
+                    # sns.set_theme()
                     sns.heatmap(g)
                     plt.title("Update Map")
                     plt.show()

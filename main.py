@@ -13,9 +13,9 @@ num = digits.target
 som = SOM(
     size=(30, 30),
     feature=64,
-    learning_rate=0.5,
+    learning_rate=0.9,
     max_iterations=20,
-    neighbor_function="gaussian",
+    neighbor_function="bubble",
 )
 
 som.fit(data)
