@@ -19,7 +19,17 @@ def gaussian(c: Tuple[int, int], sigma: int, xx: np.ndarray, yy: np.ndarray, **i
     return (ax * ay).T
 
 
+def triangle(c: Tuple[int, int], sigma: int, x_steps: np.ndarray, y_steps: np.ndarray, **ignore):
+    # 以c为中心，逐点拓展sigma
+    triangle_x = (-abs(c[0] - x_steps)) + sigma
+    triangle_y = (-abs(c[1] - y_steps)) + sigma
+    triangle_x[triangle_x < 0] = 0.
+    triangle_y[triangle_y < 0] = 0.
+    return np.outer(triangle_x, triangle_y)
+
+
 neighborhood_functions = {
     'bubble': bubble,
     'gaussian': gaussian,
+    'triangle': triangle,
 }
