@@ -1,3 +1,4 @@
+import numpy as np
 from matplotlib import pyplot as plt
 
 from SOM.model import SOM
@@ -10,30 +11,53 @@ data = digits.data
 data = scale(data)
 num = digits.target
 
-som = SOM(
-    size=(30, 30),
-    feature=64,
-    learning_rate=0.5,
-    max_iterations=50,
-    # neighbor_function="triangle",
-)
+neighbor_functions = ["bubble", "gaussian", "triangle"]
 
-som.fit(data)
+mutable_functions = {
+    "linear": lambda origin, iteration: origin / (1 + iteration / (20 / 2)),
+    "exp,max": lambda origin, iteration: origin * np.exp(- iteration / 20),
+    "exp,max*2": lambda origin, iteration: origin * np.exp(- iteration / 40),
+}
 
-# 误差曲线可视化
-plt.plot(range(som.max_iterations), som.errors)
-plt.title(som.title)
-plt.show()
+fig, axes = plt.subplots(3, 3, figsize=(24, 24))
 
-# 聚类效果可视化
-plt.figure(figsize=(8, 8))
-plt.title(som.title)
-wmap = {}
-im = 0
-for x, t in zip(data, num):
-    w = som.get_winner(x)
-    wmap[w] = im
-    plt.text(w[0], w[1], str(t), color=plt.cm.rainbow(t / 10.), fontdict={'weight': 'bold', 'size': 11})
-    im = im + 1
-plt.axis([0, som.size[0], 0, som.size[1]])
-plt.show()
+for i, neighbor in enumerate(neighbor_functions):
+    for j, (name, func) in enumerate(mutable_functions.items()):
+        target_ax = axes[i][j]
+
+        som = SOM(
+            size=(30, 30),
+            feature=64,
+            learning_rate=0.5,
+            max_iterations=20,
+            neighbor_function=neighbor,
+            mutable_update=func
+        )
+
+        som.fit(data)
+
+        # 误差曲线可视化
+        target_ax.plot(range(som.max_iterations), som.errors)
+
+        # 聚类效果可视化
+        # wmap = {}
+        # im = 0
+        # for x, t in zip(data, num):
+        #     w = som.get_winner(x)
+        #     wmap[w] = im
+        #     target_ax.text(w[0], w[1], str(t), color=plt.cm.rainbow(t / 10.), fontdict={'weight': 'bold', 'size': 11})
+        #     im = im + 1
+        # target_ax.axis([0, som.size[0], 0, som.size[1]])
+
+        # 设置行列
+        if j == 0:
+            # 是第一列的
+            target_ax.set_ylabel(neighbor)
+
+        if i == 0:
+            # 是第一行的
+            target_ax.title.set_text(name)
+
+fig.show()
+
+pass
