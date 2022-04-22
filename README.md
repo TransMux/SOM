@@ -1,31 +1,33 @@
 <h2 align="center">✨ Self-Organized-Map (SOM)</h2>
 
-It realizes a unified interface, with more comments and friendly novice~
+<div align="center"><a href="README-en.md">--> Readme.md in English <--</a></div>
 
-Pull requests and issues are highly welcomed，Leave a star if it is helpful ! Thanks~
+来自机器学习第六次实验~
 
-### Directory structure
+实现了统一接口，注释比较多，新手友好~
 
-It contains `3` individual experiments，using `main.py` you can train SOM model once which contains all visualization for a single train. 
+欢迎issue或者pr，如果帮到了你也欢迎点个star~
 
-In `demo.py` and `visualize.py`, I fired experiments on different neighbor functions and different strategies for lr decrease.(12 in total, visualize results below)
+### 目录结构
+
+目录中包含三个单独的运行文件，在`main.py`文件中可以直接运行进行单次训练（包含可视化），在`demo.py`以及`visualize.py`中为对不同窗函数和学习率下降策略的对比试验可视化。
 
 ```tree
 │  .gitignore
-│  demo.py # Visualization of 12 experimental training model effects
+│  demo.py # 12次实验训练模型效果可视化
 │  ErrorVisualize.png
-│  main.py # Single train
+│  main.py # 单次训练
 │  NumVisualize.png
 │  README.md
-│  visualize.py # Visualization of error decline curve of 12 experimental training
+│  visualize.py # 12次实验训练误差下降曲线可视化
 └─ SOM
-    │  Distance.py
-    │  model.py
-    │  Neighbor.py # Neighbor Functions locate
+    │  Distance.py # 距离函数
+    │  model.py # SOM模型主体
+    │  Neighbor.py # 窗函数
     └─  __init__.py
 ```
 
-### After All
+### 效果
 
 从左到右每一列分别为：
 
